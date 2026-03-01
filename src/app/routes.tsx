@@ -5,14 +5,7 @@ import { LoginForm } from '../components/auth/LoginForm'
 import { SignupForm } from '../components/auth/SignupForm'
 import { URLInput } from '../components/onboarding/URLInput'
 import { Dashboard } from '../components/dashboard/Dashboard'
-
-function ChatPlaceholder() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <p className="text-gray-600">Chat loading...</p>
-    </div>
-  )
-}
+import { CustomerChatPage } from '../pages/CustomerChatPage'
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +40,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '/chat/:businessId',
-    element: <ChatPlaceholder />,
+    element: <CustomerChatPage />,
   },
 ])
