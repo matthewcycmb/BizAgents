@@ -6,11 +6,14 @@ import { SignupForm } from '../components/auth/SignupForm'
 import { URLInput } from '../components/onboarding/URLInput'
 import { Dashboard } from '../components/dashboard/Dashboard'
 import { CustomerChatPage } from '../pages/CustomerChatPage'
+import { NotFoundPage } from '../pages/NotFoundPage'
+import { ErrorBoundary } from '../components/ui/ErrorBoundary'
 
 export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginForm />,
+    errorElement: <ErrorBoundary><NotFoundPage /></ErrorBoundary>,
   },
   {
     path: '/signup',
@@ -23,6 +26,7 @@ export const router = createBrowserRouter([
         <Layout />
       </AuthGuard>
     ),
+    errorElement: <ErrorBoundary><NotFoundPage /></ErrorBoundary>,
     children: [
       {
         index: true,
@@ -30,16 +34,32 @@ export const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        element: <Dashboard />,
+        element: (
+          <ErrorBoundary>
+            <Dashboard />
+          </ErrorBoundary>
+        ),
       },
       {
         path: 'onboarding',
-        element: <URLInput />,
+        element: (
+          <ErrorBoundary>
+            <URLInput />
+          </ErrorBoundary>
+        ),
       },
     ],
   },
   {
     path: '/chat/:businessId',
-    element: <CustomerChatPage />,
+    element: (
+      <ErrorBoundary>
+        <CustomerChatPage />
+      </ErrorBoundary>
+    ),
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ])
