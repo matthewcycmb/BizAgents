@@ -4,15 +4,7 @@ import { AuthGuard } from '../components/auth/AuthGuard'
 import { LoginForm } from '../components/auth/LoginForm'
 import { SignupForm } from '../components/auth/SignupForm'
 import { URLInput } from '../components/onboarding/URLInput'
-
-function DashboardPlaceholder() {
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-      <p className="mt-2 text-gray-600">Welcome to BizPilot!</p>
-    </div>
-  )
-}
+import { Dashboard } from '../components/dashboard/Dashboard'
 
 function ChatPlaceholder() {
   return (
@@ -45,7 +37,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        element: <DashboardPlaceholder />,
+        element: <Dashboard />,
       },
       {
         path: 'onboarding',
