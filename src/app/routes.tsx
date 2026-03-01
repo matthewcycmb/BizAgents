@@ -3,6 +3,7 @@ import { Layout } from './Layout'
 import { AuthGuard } from '../components/auth/AuthGuard'
 import { LoginForm } from '../components/auth/LoginForm'
 import { SignupForm } from '../components/auth/SignupForm'
+import { URLInput } from '../components/onboarding/URLInput'
 
 function DashboardPlaceholder() {
   return (
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <DashboardPlaceholder />,
+      },
+      {
+        path: 'onboarding',
+        element: <URLInput />,
       },
     ],
   },

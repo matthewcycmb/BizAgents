@@ -32,6 +32,7 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       chunks: {
         Row: {
@@ -64,6 +65,7 @@ export type Database = {
           metadata?: Record<string, unknown>
           created_at?: string
         }
+        Relationships: []
       }
       leads: {
         Row: {
@@ -108,8 +110,10 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
     }
+    Views: Record<string, never>
     Functions: {
       match_chunks: {
         Args: {
@@ -127,5 +131,6 @@ export type Database = {
       }
     }
     Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }
