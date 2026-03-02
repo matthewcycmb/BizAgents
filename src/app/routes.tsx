@@ -5,7 +5,6 @@ import { LoginForm } from '../components/auth/LoginForm'
 import { SignupForm } from '../components/auth/SignupForm'
 import { URLInput } from '../components/onboarding/URLInput'
 import { Dashboard } from '../components/dashboard/Dashboard'
-import { CustomerChatPage } from '../pages/CustomerChatPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { ErrorBoundary } from '../components/ui/ErrorBoundary'
 
@@ -49,14 +48,6 @@ export const router = createBrowserRouter([
         ),
       },
     ],
-  },
-  {
-    path: '/chat/:businessId',
-    element: (
-      <ErrorBoundary>
-        <CustomerChatPage />
-      </ErrorBoundary>
-    ),
   },
   {
     path: '*',

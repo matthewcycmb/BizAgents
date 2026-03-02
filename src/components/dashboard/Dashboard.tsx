@@ -1,21 +1,19 @@
 import { useNavigate } from 'react-router-dom'
 import { useBusiness } from '../../hooks/useBusiness'
-import { useLeads } from '../../hooks/useLeads'
+import { useChat } from '../../hooks/useChat'
 import { supabase } from '../../lib/supabase'
 import { Button } from '../ui/Button'
 import { BusinessCard } from './BusinessCard'
-import { LeadTable } from './LeadTable'
 import { ScrapingProgress } from '../onboarding/ScrapingProgress'
+import { ChatWindow } from '../chat/ChatWindow'
 
 export function Dashboard() {
   const { businesses, loading, refreshBusiness } = useBusiness()
   const navigate = useNavigate()
 
   const business = businesses[0]
-  const { leads, loading: leadsLoading, updateLeadStatus } = useLeads(business?.id)
 
   const handleScrape = async (businessId: string, url: string) => {
-    // Optimistically update status
     refreshBusiness(businessId)
     try {
       await supabase.functions.invoke('scrape', {
@@ -50,8 +48,6 @@ export function Dashboard() {
     )
   }
 
-  const chatLink = `${window.location.origin}/chat/${business.id}`
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
@@ -71,35 +67,26 @@ export function Dashboard() {
         )}
       </div>
 
-      {/* Chat Link */}
+      {/* Chat — embedded directly in dashboard */}
       {business.scrape_status === 'completed' && (
-        <div className="bg-white p-4 rounded-lg shadow">
-          <p className="text-sm font-medium text-gray-700 mb-2">Shareable chat link:</p>
-          <div className="flex items-center gap-2">
-            <input
-              readOnly
-              value={chatLink}
-              className="flex-1 text-sm bg-gray-50 border border-gray-300 rounded px-3 py-2"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => navigator.clipboard.writeText(chatLink)}
-            >
-              Copy
-            </Button>
-          </div>
-        </div>
+        <DashboardChat businessId={business.id} />
       )}
+    </div>
+  )
+}
 
-      {/* Leads Table */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Leads</h3>
-        <LeadTable
-          leads={leads}
-          loading={leadsLoading}
-          onStatusChange={updateLeadStatus}
-        />
-      </div>
+function DashboardChat({ businessId }: { businessId: string }) {
+  const { messages, loading, error, businessName, sendMessage } = useChat(businessId)
+
+  return (
+    <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '600px' }}>
+      <ChatWindow
+        messages={messages}
+        loading={loading}
+        error={error}
+        businessName={businessName || 'BizPilot Copilot'}
+        onSend={sendMessage}
+      />
     </div>
   )
 }

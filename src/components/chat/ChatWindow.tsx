@@ -19,13 +19,13 @@ export function ChatWindow({ messages, loading, error, businessName, onSend }: C
   }, [messages, loading])
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <h1 className="text-lg font-semibold text-gray-900">
-          {businessName || 'Chat'}
+          {businessName}
         </h1>
-        <p className="text-xs text-gray-500">Powered by BizPilot</p>
+        <p className="text-xs text-gray-500">Your AI Business Copilot</p>
       </div>
 
       {/* Messages */}
@@ -33,9 +33,11 @@ export function ChatWindow({ messages, loading, error, businessName, onSend }: C
         {messages.length === 0 && (
           <div className="text-center text-gray-400 mt-12">
             <p className="text-lg font-medium">
-              {businessName ? `Welcome to ${businessName}!` : 'Welcome!'}
+              Your business copilot is ready
             </p>
-            <p className="text-sm mt-1">Ask us anything about our services.</p>
+            <p className="text-sm mt-1">
+              Ask anything about your business — get insights, draft content, or brainstorm ideas.
+            </p>
           </div>
         )}
         {messages.map((msg, i) => (
