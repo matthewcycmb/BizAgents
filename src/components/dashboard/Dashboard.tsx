@@ -1,14 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import { useBusiness } from '../../hooks/useBusiness'
 import { useChat } from '../../hooks/useChat'
+import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../lib/supabase'
 import { Button } from '../ui/Button'
-import { BusinessCard } from './BusinessCard'
 import { ScrapingProgress } from '../onboarding/ScrapingProgress'
 import { ChatWindow } from '../chat/ChatWindow'
 
 export function Dashboard() {
   const { businesses, loading, refreshBusiness } = useBusiness()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   const business = businesses[0]
@@ -27,10 +28,10 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-48" />
-          <div className="h-32 bg-gray-200 rounded" />
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="animate-pulse space-y-4 text-center">
+          <div className="h-8 bg-gray-200 rounded w-48 mx-auto" />
+          <div className="h-32 bg-gray-200 rounded w-96 mx-auto" />
         </div>
       </div>
     )
@@ -38,55 +39,69 @@ export function Dashboard() {
 
   if (businesses.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Welcome to BizPilot</h2>
-        <p className="mt-2 text-gray-600">Get started by adding your business.</p>
-        <Button onClick={() => navigate('/onboarding')} className="mt-4">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 blur-2xl opacity-40 mb-8" />
+        <h2 className="text-4xl font-bold text-gray-900 mb-2">Welcome to BizPilot</h2>
+        <p className="text-lg text-gray-600 mb-8">Get started by adding your business.</p>
+        <Button onClick={() => navigate('/onboarding')} className="px-6 py-3">
           Add Your Business
         </Button>
       </div>
     )
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-
-      {/* Business Card */}
-      <BusinessCard business={business} />
-
-      {/* Scraping Controls */}
-      <div className="flex items-center gap-4">
-        {(business.scrape_status === 'pending' || business.scrape_status === 'failed') && (
-          <Button onClick={() => handleScrape(business.id, business.url)}>
-            {business.scrape_status === 'failed' ? 'Retry Scrape' : 'Scrape Website'}
+  // Scraping states - show centered UI
+  if (business.scrape_status === 'pending' || business.scrape_status === 'failed') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 blur-2xl opacity-40 mb-8" />
+        <h2 className="text-2xl text-gray-600 mb-2">Hello, {user?.email}</h2>
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">Let's analyze your business</h1>
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">{business.name}</h3>
+          <p className="text-sm text-indigo-600 mb-6">{business.url}</p>
+          <Button
+            onClick={() => handleScrape(business.id, business.url)}
+            className="w-full py-3"
+          >
+            {business.scrape_status === 'failed' ? 'Retry Analysis' : 'Start Analysis'}
           </Button>
-        )}
-        {business.scrape_status === 'scraping' && (
-          <ScrapingProgress business={business} onRefresh={refreshBusiness} />
-        )}
+          {business.scrape_status === 'failed' && (
+            <p className="text-sm text-red-600 mt-4">Previous analysis failed. Please try again.</p>
+          )}
+        </div>
       </div>
+    )
+  }
 
-      {/* Chat — embedded directly in dashboard */}
-      {business.scrape_status === 'completed' && (
-        <DashboardChat businessId={business.id} />
-      )}
-    </div>
-  )
+  if (business.scrape_status === 'scraping') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 blur-2xl opacity-40 mb-8 animate-pulse" />
+        <h2 className="text-2xl text-gray-600 mb-2">Analyzing your business...</h2>
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">This may take a few moments</h1>
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md">
+          <ScrapingProgress business={business} onRefresh={refreshBusiness} />
+        </div>
+      </div>
+    )
+  }
+
+  // Chat interface - scraping completed
+  return <DashboardChat businessId={business.id} userName={user?.email || 'there'} />
 }
 
-function DashboardChat({ businessId }: { businessId: string }) {
+function DashboardChat({ businessId, userName }: { businessId: string; userName: string }) {
   const { messages, loading, error, businessName, sendMessage } = useChat(businessId)
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '600px' }}>
-      <ChatWindow
-        messages={messages}
-        loading={loading}
-        error={error}
-        businessName={businessName || 'BizPilot Copilot'}
-        onSend={sendMessage}
-      />
-    </div>
+    <ChatWindow
+      messages={messages}
+      loading={loading}
+      error={error}
+      businessName={businessName || 'BizPilot'}
+      userName={userName}
+      onSend={sendMessage}
+    />
   )
 }
