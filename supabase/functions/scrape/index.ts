@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import * as cheerio from 'https://esm.sh/cheerio@1.0.0-rc.12'
 import { corsHeaders } from '../_shared/cors.ts'
-import { createServiceClient } from '../_shared/supabase-client.ts'
+import { createServiceClient, authenticateRequest } from '../_shared/supabase-client.ts'
 
 interface ScrapedPage {
   url: string
@@ -162,6 +162,30 @@ async function embedTexts(texts: string[], apiKey: string): Promise<number[][]> 
   return allEmbeddings
 }
 
+function isPrivateUrl(urlString: string): boolean {
+  try {
+    const parsed = new URL(urlString)
+    const hostname = parsed.hostname.toLowerCase()
+
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return true
+
+    // Check for private IP ranges
+    const parts = hostname.split('.').map(Number)
+    if (parts.length === 4 && parts.every((p) => !isNaN(p))) {
+      if (parts[0] === 10) return true
+      if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true
+      if (parts[0] === 192 && parts[1] === 168) return true
+      if (parts[0] === 169 && parts[1] === 254) return true
+      if (parts[0] === 127) return true
+      if (parts[0] === 0) return true
+    }
+
+    return false
+  } catch {
+    return true
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -178,10 +202,43 @@ serve(async (req) => {
       )
     }
 
+    // Validate URL is not a private/internal address (SSRF protection)
+    if (isPrivateUrl(url)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid URL: private or internal addresses are not allowed' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const supabase = createServiceClient()
+
+    // Authenticate the request
+    const { user, error: authError } = await authenticateRequest(req, supabase)
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const openaiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openaiKey) {
       throw new Error('OPENAI_API_KEY not configured')
+    }
+
+    // Verify business ownership before proceeding
+    const { data: business, error: bizError } = await supabase
+      .from('businesses')
+      .select('id')
+      .eq('id', business_id)
+      .eq('owner_id', user.id)
+      .single()
+
+    if (bizError || !business) {
+      return new Response(
+        JSON.stringify({ error: 'Business not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Update status to scraping
@@ -272,8 +329,9 @@ serve(async (req) => {
       // ignore cleanup errors
     }
 
+    console.error('Scrape function error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An internal error occurred' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }

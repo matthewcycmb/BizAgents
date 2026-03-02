@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { corsHeaders } from '../_shared/cors.ts'
-import { createServiceClient } from '../_shared/supabase-client.ts'
+import { createServiceClient, authenticateRequest } from '../_shared/supabase-client.ts'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -130,6 +130,16 @@ serve(async (req) => {
     }
 
     const supabase = createServiceClient()
+
+    // Authenticate the request
+    const { user, error: authError } = await authenticateRequest(req, supabase)
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const openaiKey = Deno.env.get('OPENAI_API_KEY')
     const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY')
 
@@ -137,11 +147,12 @@ serve(async (req) => {
       throw new Error('API keys not configured')
     }
 
-    // Fetch business info
+    // Fetch business info — also verifies ownership
     const { data: business, error: bizError } = await supabase
       .from('businesses')
       .select('name, url')
       .eq('id', business_id)
+      .eq('owner_id', user.id)
       .single()
 
     if (bizError || !business) {
@@ -218,8 +229,9 @@ ${contextText}
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error('Chat function error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An internal error occurred' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
