@@ -5,10 +5,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({ variant = 'primary', className = '', children, ...props }: ButtonProps) {
-  const base = 'px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+  const base = 'px-4 py-2 rounded-full font-medium focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all'
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-    secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-indigo-500',
+    primary: 'bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white hover:opacity-90 shadow-[0_4px_12px_rgba(230,57,70,0.3)]',
+    secondary: 'bg-transparent text-bp-text-secondary border border-bp-border hover:bg-bp-bg-card hover:text-bp-text-primary',
   }
 
   return (

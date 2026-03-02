@@ -70,45 +70,53 @@ export function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-bp-bg-main relative overflow-hidden flex">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-white border-r border-gray-100 z-50 transform transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0`}
-      >
-        <div className="flex flex-col h-full">
-          {/* Logo section */}
-          <div className="p-8 border-b border-gray-100">
-            <h1 className="text-xl font-light tracking-tight text-gray-900">BizPilot</h1>
+      {/* Dashboard container — Apple-style glossy fullscreen shell */}
+      <div className="dashboard-glass relative z-10 flex w-full h-full overflow-hidden">
+        {/* Sidebar */}
+        <aside
+          className={`sidebar-glass fixed lg:relative top-0 left-0 h-full w-[272px] z-50 flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0`}
+          style={{ padding: '24px 16px 16px' }}
+        >
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 px-2 mb-6">
+            <div className="w-[30px] h-[30px] rounded-[9px] flex items-center justify-center overflow-hidden">
+              <img src="/logo-rose.png" alt="BizPilot" className="w-full h-full object-cover" />
+            </div>
+            <span className="font-display font-extrabold text-xl text-bp-text-primary">BizPilot</span>
           </div>
 
           {/* New chat button */}
-          <div className="p-6 relative" ref={pickerRef}>
+          <div className="relative mb-6" ref={pickerRef}>
             <button
               onClick={handleNewChat}
-              className="w-full border border-gray-300 text-gray-700 rounded-lg py-3 px-4 text-sm font-medium hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center gap-2 w-full py-3 px-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-bp-text-primary text-sm font-semibold hover:bg-white/[0.06] hover:border-bp-accent-green/40 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
             >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-4 h-4 text-bp-text-secondary">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               New chat
             </button>
 
             {/* Business picker popover */}
             {showPicker && (
-              <div className="absolute left-6 right-6 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
-                <p className="px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wider">Select business</p>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-bp-bg-card border border-bp-border rounded-xl shadow-lg z-10 py-1">
+                <p className="px-3 py-2 text-[10px] font-bold text-bp-text-muted uppercase tracking-[1.5px]">Select business</p>
                 {businesses.map((b) => (
                   <button
                     key={b.id}
                     onClick={() => handlePickBusiness(b.id)}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors truncate"
+                    className="w-full text-left px-3 py-2 text-sm text-bp-text-secondary hover:bg-bp-bg-card-hover hover:text-bp-text-primary transition-colors truncate"
                   >
                     {b.name}
                   </button>
@@ -117,52 +125,58 @@ export function Layout() {
             )}
           </div>
 
-          {/* Navigation links */}
-          <nav className="px-6 space-y-1">
+          {/* Navigation */}
+          <nav className="flex flex-col gap-0.5 mb-7">
             <Link
               to="/dashboard"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm ${
+              className={`relative flex items-center gap-3 py-2.5 px-3 rounded-[10px] text-sm transition-all ${
                 isActive('/dashboard')
-                  ? 'font-semibold text-gray-900 border-l-2 border-gray-900 pl-2'
-                  : 'font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-bp-text-primary font-semibold'
+                  : 'text-bp-text-secondary font-medium hover:bg-bp-bg-card hover:text-bp-text-primary'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              {isActive('/dashboard') && (
+                <span className="absolute -left-1 top-1.5 bottom-1.5 w-[3px] rounded bg-bp-accent" />
+              )}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-[18px] h-[18px] shrink-0">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
               </svg>
-              <span>Dashboard</span>
+              Dashboard
             </Link>
 
             <Link
               to="/my-business"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm ${
+              className={`relative flex items-center gap-3 py-2.5 px-3 rounded-[10px] text-sm transition-all ${
                 isActive('/my-business')
-                  ? 'font-semibold text-gray-900 border-l-2 border-gray-900 pl-2'
-                  : 'font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-bp-text-primary font-semibold'
+                  : 'text-bp-text-secondary font-medium hover:bg-bp-bg-card hover:text-bp-text-primary'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              {isActive('/my-business') && (
+                <span className="absolute -left-1 top-1.5 bottom-1.5 w-[3px] rounded bg-bp-accent" />
+              )}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-[18px] h-[18px] shrink-0">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-              <span>My Businesses</span>
+              My Businesses
             </Link>
           </nav>
 
-          {/* Conversation history */}
+          {/* Recent Chats */}
           {conversations.length > 0 && (
-            <div className="flex-1 overflow-y-auto px-6 mt-4 border-t border-gray-100 pt-4">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Recent Chats</p>
-              <div className="space-y-0.5">
+            <>
+              <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-bp-text-muted px-2 mb-2.5">Recent Chats</p>
+              <div className="flex-1 overflow-y-auto flex flex-col gap-0.5">
                 {conversations.map((conv) => (
                   <button
                     key={conv.id}
                     onClick={() => handleSelectConversation(conv.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors ${
+                    className={`py-2 px-3 rounded-lg text-[13px] text-left truncate transition-all ${
                       activeConversationId === conv.id
-                        ? 'bg-gray-100 text-gray-900 font-medium'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-bp-bg-card text-bp-text-primary'
+                        : 'text-bp-text-secondary hover:bg-bp-bg-card hover:text-bp-text-primary'
                     }`}
                     title={conv.title}
                   >
@@ -170,46 +184,48 @@ export function Layout() {
                   </button>
                 ))}
               </div>
-            </div>
+            </>
           )}
 
-          {/* User profile section */}
+          {/* User footer */}
           {user && (
-            <div className="border-t border-gray-100 p-6 mt-auto">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                <button
-                  onClick={handleSignOut}
-                  className="text-xs text-gray-500 hover:text-gray-900 hover:underline transition-colors"
-                >
-                  Sign out
-                </button>
-              </div>
+            <div className="mt-auto pt-4 border-t border-bp-border flex items-center justify-between gap-2">
+              <span className="text-xs text-bp-text-secondary truncate">{user.email}</span>
+              <button
+                onClick={handleSignOut}
+                className="text-xs text-bp-text-muted px-2 py-1 rounded-md hover:text-bp-accent-light hover:bg-bp-accent/[0.08] transition-colors whitespace-nowrap"
+              >
+                Sign out
+              </button>
             </div>
           )}
-        </div>
-      </aside>
+        </aside>
 
-      {/* Main content area */}
-      <div className="lg:pl-72">
-        {/* Mobile header */}
-        <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-gray-100 px-4 py-3">
-          <div className="flex items-center gap-3">
+        {/* Main content */}
+        <main className="flex-1 flex flex-col relative overflow-hidden">
+          {/* Flower background inside main panel */}
+          <div className="absolute inset-0 z-0">
+            <img src="/bg-flowers.webp" alt="" className="w-full h-full object-cover opacity-70" />
+            <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center 35%, rgba(0,0,0,0.5), rgba(0,0,0,0.85) 65%, rgba(0,0,0,0.95) 100%)' }} />
+            <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 150px rgba(0,0,0,0.5)' }} />
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="lg:hidden absolute top-4 left-4 z-20">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+              className="p-2 rounded-lg bg-bp-bg-card/80 backdrop-blur-sm border border-bp-border text-bp-text-primary"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <span className="text-lg font-light tracking-tight text-gray-900">BizPilot</span>
           </div>
-        </div>
 
-        {/* Page content */}
-        <main className="min-h-screen">
-          <Outlet />
+          {/* Page content (z-1 to stay above the background) */}
+          <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

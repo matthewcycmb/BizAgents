@@ -25,18 +25,29 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="max-w-md w-full space-y-10">
+    <div className="min-h-screen flex items-center justify-center bg-bp-bg-main relative overflow-hidden px-4">
+      {/* Flower background */}
+      <div className="fixed inset-0 z-0">
+        <img src="/bg-flowers.webp" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-bp-bg-main/60 backdrop-blur-[18px]" />
+      </div>
+
+      <div className="relative z-10 max-w-md w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-2xl font-light tracking-tight text-gray-900">BizPilot</h1>
-          <h2 className="mt-3 text-sm text-gray-500">Sign in to continue</h2>
+          <div className="flex items-center justify-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-[9px] overflow-hidden">
+              <img src="/logo-rose.png" alt="BizPilot" className="w-full h-full object-cover" />
+            </div>
+            <h1 className="font-display text-2xl font-extrabold text-bp-text-primary">BizPilot</h1>
+          </div>
+          <h2 className="text-sm text-bp-text-secondary">Sign in to continue</h2>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="bg-bp-bg-card/85 backdrop-blur-xl rounded-[14px] border border-bp-border p-8 space-y-6">
           {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
+            <p className="text-sm text-bp-accent text-center">{error}</p>
           )}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-bp-text-primary mb-2">
               Email
             </label>
             <input
@@ -45,11 +56,11 @@ export function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
+              className="block w-full px-4 py-3 text-base bg-bp-bg-input border border-bp-border rounded-lg text-bp-text-primary placeholder:text-bp-text-muted focus:outline-none focus:border-bp-accent-green transition-colors"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-bp-text-primary mb-2">
               Password
             </label>
             <input
@@ -58,19 +69,19 @@ export function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
+              className="block w-full px-4 py-3 text-base bg-bp-bg-input border border-bp-border rounded-lg text-bp-text-primary placeholder:text-bp-text-muted focus:outline-none focus:border-bp-accent-green transition-colors"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+            className="w-full py-3 px-4 rounded-full text-white bg-gradient-to-br from-bp-accent to-bp-accent-dim hover:opacity-90 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all shadow-[0_4px_12px_rgba(230,57,70,0.3)]"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-bp-text-secondary">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-gray-900 hover:underline">
+            <Link to="/signup" className="text-bp-text-primary hover:text-bp-accent-light transition-colors">
               Sign up
             </Link>
           </p>

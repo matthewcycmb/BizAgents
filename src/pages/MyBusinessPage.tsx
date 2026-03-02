@@ -73,10 +73,10 @@ export function MyBusinessPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="flex items-center justify-center h-full">
         <div className="animate-pulse space-y-4 text-center">
-          <div className="h-8 bg-gray-100 rounded w-48 mx-auto" />
-          <div className="h-32 bg-gray-100 rounded w-96 mx-auto" />
+          <div className="h-8 bg-bp-bg-card rounded w-48 mx-auto" />
+          <div className="h-32 bg-bp-bg-card rounded w-96 mx-auto" />
         </div>
       </div>
     )
@@ -84,12 +84,16 @@ export function MyBusinessPage() {
 
   if (businesses.length === 0 && !showAddForm) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <h2 className="text-3xl font-light tracking-tight text-gray-900 mb-2">No business yet</h2>
-        <p className="text-lg text-gray-400 font-light mb-12">Add your business to get started.</p>
+      <div className="flex flex-col items-center justify-center h-full px-4">
+        <h2 className="font-display text-3xl font-bold text-bp-text-primary mb-2" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          No business yet
+        </h2>
+        <p className="text-lg text-bp-text-secondary mb-12" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+          Add your business to get started.
+        </p>
         <button
           onClick={() => setShowAddForm(true)}
-          className="px-8 py-3 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
+          className="px-8 py-3 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white font-semibold hover:opacity-90 transition-all shadow-[0_4px_12px_rgba(230,57,70,0.3)]"
         >
           Add Your Business
         </button>
@@ -98,13 +102,15 @@ export function MyBusinessPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-16 px-6">
+    <div className="max-w-3xl mx-auto py-12 px-6 overflow-y-auto h-full">
       <div className="flex items-center justify-between mb-10">
-        <h1 className="text-3xl font-light tracking-tight text-gray-900">My Businesses</h1>
+        <h1 className="font-display text-3xl font-bold text-bp-text-primary" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          My Businesses
+        </h1>
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-5 py-2 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+            className="px-5 py-2 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white text-sm font-semibold hover:opacity-90 transition-all shadow-[0_4px_12px_rgba(230,57,70,0.3)]"
           >
             Add Business
           </button>
@@ -114,15 +120,15 @@ export function MyBusinessPage() {
       <div className="space-y-4">
         {/* Add business form */}
         {showAddForm && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">New Business</h3>
+          <div className="bg-bp-bg-card/85 backdrop-blur-xl rounded-[14px] border border-bp-border p-6">
+            <h3 className="text-[10px] font-bold text-bp-text-muted uppercase tracking-[1.5px] mb-4">New Business</h3>
             <div className="space-y-3">
               <input
                 type="text"
                 placeholder="Business name"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="w-full border border-bp-border bg-bp-bg-input rounded-lg px-3 py-2 text-sm text-bp-text-primary placeholder:text-bp-text-muted focus:outline-none focus:border-bp-accent-green"
                 autoFocus
               />
               <input
@@ -130,19 +136,19 @@ export function MyBusinessPage() {
                 placeholder="https://example.com"
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="w-full border border-bp-border bg-bp-bg-input rounded-lg px-3 py-2 text-sm text-bp-text-primary placeholder:text-bp-text-muted focus:outline-none focus:border-bp-accent-green"
               />
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={handleAdd}
                   disabled={creating || !newName.trim() || !newUrl.trim()}
-                  className="px-5 py-2 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+                  className="px-5 py-2 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
                 >
                   {creating ? 'Creating...' : 'Create'}
                 </button>
                 <button
                   onClick={() => { setShowAddForm(false); setNewName(''); setNewUrl('') }}
-                  className="px-5 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="px-5 py-2 rounded-full border border-bp-border text-sm font-medium text-bp-text-secondary hover:bg-bp-bg-card-hover transition-colors"
                 >
                   Cancel
                 </button>
@@ -158,7 +164,7 @@ export function MyBusinessPage() {
           const chatUrl = `${window.location.origin}/chat/${business.id}`
 
           return (
-            <div key={business.id} className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+            <div key={business.id} className="bg-bp-bg-card/85 backdrop-blur-xl rounded-[14px] border border-bp-border divide-y divide-bp-border-subtle">
               {/* Business name & status */}
               <div className="p-6 flex items-center justify-between">
                 <div className="flex-1 min-w-0">
@@ -168,24 +174,24 @@ export function MyBusinessPage() {
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200"
+                        className="w-full border border-bp-border bg-bp-bg-input rounded-lg px-3 py-2 text-sm font-medium text-bp-text-primary focus:outline-none focus:border-bp-accent-green"
                       />
                       <input
                         type="url"
                         value={editUrl}
                         onChange={(e) => setEditUrl(e.target.value)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                        className="w-full border border-bp-border bg-bp-bg-input rounded-lg px-3 py-2 text-sm text-bp-text-primary focus:outline-none focus:border-bp-accent-green"
                       />
                       <div className="flex gap-2 pt-1">
                         <button
                           onClick={saveEdit}
-                          className="px-4 py-1.5 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+                          className="px-4 py-1.5 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white text-sm font-semibold hover:opacity-90 transition-all"
                         >
                           Save
                         </button>
                         <button
                           onClick={cancelEdit}
-                          className="px-4 py-1.5 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                          className="px-4 py-1.5 rounded-full border border-bp-border text-sm font-medium text-bp-text-secondary hover:bg-bp-bg-card-hover transition-colors"
                         >
                           Cancel
                         </button>
@@ -193,12 +199,12 @@ export function MyBusinessPage() {
                     </div>
                   ) : (
                     <div>
-                      <h2 className="text-xl font-medium text-gray-900">{business.name}</h2>
+                      <h2 className="text-xl font-semibold text-bp-text-primary">{business.name}</h2>
                       <a
                         href={business.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                        className="text-sm text-bp-text-secondary hover:text-bp-text-primary transition-colors"
                       >
                         {business.url}
                       </a>
@@ -210,7 +216,7 @@ export function MyBusinessPage() {
                   {!isEditing && (
                     <button
                       onClick={() => startEdit(business)}
-                      className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                      className="text-sm text-bp-text-secondary hover:text-bp-text-primary transition-colors"
                     >
                       Edit
                     </button>
@@ -220,17 +226,17 @@ export function MyBusinessPage() {
 
               {/* Scraping details */}
               <div className="p-6 space-y-4">
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Site Analysis</h3>
+                <h3 className="text-[10px] font-bold text-bp-text-muted uppercase tracking-[1.5px]">Site Analysis</h3>
 
                 {business.scrape_status === 'completed' && (
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-bp-text-secondary">
                       {business.pages_scraped} page{business.pages_scraped !== 1 ? 's' : ''} analyzed
                     </p>
                     <button
                       onClick={() => handleScrape(business)}
                       disabled={isScraping}
-                      className="text-sm text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
+                      className="text-sm text-bp-text-secondary hover:text-bp-text-primary transition-colors disabled:opacity-50"
                     >
                       {isScraping ? 'Re-analyzing...' : 'Re-analyze'}
                     </button>
@@ -244,12 +250,12 @@ export function MyBusinessPage() {
                 {(business.scrape_status === 'pending' || business.scrape_status === 'failed') && (
                   <div>
                     {business.scrape_status === 'failed' && (
-                      <p className="text-sm text-red-600 mb-3">Previous analysis failed. Please try again.</p>
+                      <p className="text-sm text-bp-accent mb-3">Previous analysis failed. Please try again.</p>
                     )}
                     <button
                       onClick={() => handleScrape(business)}
                       disabled={isScraping}
-                      className="px-6 py-2 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+                      className="px-6 py-2 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
                     >
                       {isScraping ? 'Starting...' : business.scrape_status === 'failed' ? 'Retry Analysis' : 'Start Analysis'}
                     </button>
@@ -260,18 +266,18 @@ export function MyBusinessPage() {
               {/* Public chatbot link */}
               {business.scrape_status === 'completed' && (
                 <div className="p-6 space-y-3">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Customer Chatbot</h3>
-                  <p className="text-sm text-gray-600">Share this link with customers so they can chat with your AI assistant.</p>
+                  <h3 className="text-[10px] font-bold text-bp-text-muted uppercase tracking-[1.5px]">Customer Chatbot</h3>
+                  <p className="text-sm text-bp-text-secondary">Share this link with customers so they can chat with your AI assistant.</p>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       readOnly
                       value={chatUrl}
-                      className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-700"
+                      className="flex-1 text-sm bg-bp-bg-input border border-bp-border rounded-lg px-3 py-2 text-bp-text-secondary"
                     />
                     <button
                       onClick={() => navigator.clipboard.writeText(chatUrl)}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-bp-text-secondary border border-bp-border rounded-lg hover:bg-bp-bg-card-hover hover:text-bp-text-primary transition-colors"
                     >
                       Copy
                     </button>
@@ -281,7 +287,7 @@ export function MyBusinessPage() {
 
               {/* Meta info */}
               <div className="p-6">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-bp-text-muted">
                   Added {new Date(business.created_at).toLocaleDateString()}
                 </p>
               </div>

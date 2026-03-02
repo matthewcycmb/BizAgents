@@ -30,10 +30,10 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="flex items-center justify-center h-full">
         <div className="animate-pulse space-y-4 text-center">
-          <div className="h-8 bg-gray-100 rounded w-48 mx-auto" />
-          <div className="h-32 bg-gray-100 rounded w-96 mx-auto" />
+          <div className="h-8 bg-bp-bg-card rounded w-48 mx-auto" />
+          <div className="h-32 bg-bp-bg-card rounded w-96 mx-auto" />
         </div>
       </div>
     )
@@ -41,12 +41,16 @@ export function Dashboard() {
 
   if (businesses.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <h2 className="text-3xl font-light tracking-tight text-gray-900 mb-2">Welcome to BizPilot</h2>
-        <p className="text-lg text-gray-400 font-light mb-12">Get started by adding your business.</p>
+      <div className="flex flex-col items-center justify-center h-full px-4">
+        <h2 className="font-display text-3xl font-bold text-bp-text-primary mb-2" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          Welcome to BizPilot
+        </h2>
+        <p className="text-lg text-bp-text-secondary mb-12" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+          Get started by adding your business.
+        </p>
         <button
           onClick={() => navigate('/onboarding')}
-          className="px-8 py-3 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
+          className="px-8 py-3 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white font-semibold hover:opacity-90 hover:scale-105 transition-all shadow-[0_4px_12px_rgba(230,57,70,0.3)]"
         >
           Add Your Business
         </button>
@@ -56,30 +60,38 @@ export function Dashboard() {
 
   if (!business) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <h2 className="text-3xl font-light tracking-tight text-gray-900 mb-2">Welcome to BizPilot</h2>
-        <p className="text-lg text-gray-400 font-light mb-12">Select a business to start chatting.</p>
+      <div className="flex flex-col items-center justify-center h-full px-4">
+        <h2 className="font-display text-3xl font-bold text-bp-text-primary mb-2" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          Welcome to BizPilot
+        </h2>
+        <p className="text-lg text-bp-text-secondary" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+          Select a business to start chatting.
+        </p>
       </div>
     )
   }
 
-  // Scraping states - show centered UI
+  // Scraping states
   if (business.scrape_status === 'pending' || business.scrape_status === 'failed') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <h2 className="text-lg text-gray-500 mb-2 font-light">Hello, {user?.email?.split('@')[0]}</h2>
-        <h1 className="text-3xl font-light tracking-tight text-gray-900 mb-12">Let's analyze your business</h1>
-        <div className="bg-white rounded-lg border border-gray-200 p-10 max-w-md text-center">
-          <h3 className="text-xl font-medium text-gray-900 mb-2">{business.name}</h3>
-          <p className="text-sm text-gray-500 mb-8">{business.url}</p>
+      <div className="flex flex-col items-center justify-center h-full px-4">
+        <h2 className="text-lg text-bp-text-secondary mb-2" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+          Hello, {user?.email?.split('@')[0]}
+        </h2>
+        <h1 className="font-display text-3xl font-bold text-bp-text-primary mb-12" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          Let's analyze your business
+        </h1>
+        <div className="bg-bp-bg-card/85 backdrop-blur-xl rounded-[14px] border border-bp-border p-10 max-w-md text-center">
+          <h3 className="text-xl font-semibold text-bp-text-primary mb-2">{business.name}</h3>
+          <p className="text-sm text-bp-text-secondary mb-8">{business.url}</p>
           <button
             onClick={() => handleScrape(business.id, business.url)}
-            className="w-full py-3 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
+            className="w-full py-3 rounded-full bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white font-semibold hover:opacity-90 transition-all shadow-[0_4px_12px_rgba(230,57,70,0.3)]"
           >
             {business.scrape_status === 'failed' ? 'Retry Analysis' : 'Start Analysis'}
           </button>
           {business.scrape_status === 'failed' && (
-            <p className="text-sm text-red-600 mt-4">Previous analysis failed. Please try again.</p>
+            <p className="text-sm text-bp-accent mt-4">Previous analysis failed. Please try again.</p>
           )}
         </div>
       </div>
@@ -88,10 +100,14 @@ export function Dashboard() {
 
   if (business.scrape_status === 'scraping') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <h2 className="text-lg text-gray-500 mb-2 font-light">Analyzing your business...</h2>
-        <h1 className="text-3xl font-light tracking-tight text-gray-900 mb-12">This may take a few moments</h1>
-        <div className="bg-white rounded-lg border border-gray-200 p-10 max-w-md">
+      <div className="flex flex-col items-center justify-center h-full px-4">
+        <h2 className="text-lg text-bp-text-secondary mb-2" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+          Analyzing your business...
+        </h2>
+        <h1 className="font-display text-3xl font-bold text-bp-text-primary mb-12" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+          This may take a few moments
+        </h1>
+        <div className="bg-bp-bg-card/85 backdrop-blur-xl rounded-[14px] border border-bp-border p-10 max-w-md">
           <ScrapingProgress business={business} onRefresh={refreshBusiness} />
         </div>
       </div>

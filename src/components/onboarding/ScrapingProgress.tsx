@@ -22,7 +22,7 @@ export function ScrapingProgress({ business, onRefresh }: ScrapingProgressProps)
     <div className="flex items-center gap-3">
       <SiteStatus status={business.scrape_status} />
       {business.scrape_status === 'completed' && (
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-bp-text-secondary">
           {business.pages_scraped} page{business.pages_scraped !== 1 ? 's' : ''} scraped
         </span>
       )}

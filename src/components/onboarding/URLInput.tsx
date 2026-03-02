@@ -28,13 +28,13 @@ export function URLInput() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Add Your Business</h2>
-      <p className="text-gray-600 mb-8">
+      <h2 className="font-display text-2xl font-bold text-bp-text-primary mb-2">Add Your Business</h2>
+      <p className="text-bp-text-secondary mb-8">
         Enter your business details and website URL. We'll scrape your site to power your AI chatbot.
       </p>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-6">
+      <form onSubmit={handleSubmit} className="bg-bp-bg-card/85 backdrop-blur-xl p-6 rounded-[14px] border border-bp-border space-y-6">
         {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded text-sm">{error}</div>
+          <div className="bg-bp-accent/10 text-bp-accent-light p-3 rounded-lg text-sm">{error}</div>
         )}
         <Input
           id="name"

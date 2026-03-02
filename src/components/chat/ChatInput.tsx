@@ -6,7 +6,7 @@ interface ChatInputProps {
   placeholder?: string
 }
 
-export function ChatInput({ onSend, disabled, placeholder = "Type your message..." }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, placeholder = "Ask anything..." }: ChatInputProps) {
   const [input, setInput] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,36 +19,24 @@ export function ChatInput({ onSend, disabled, placeholder = "Type your message..
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="bg-white border border-gray-200 rounded-xl focus-within:border-gray-400 transition-colors">
-        <div className="flex items-center gap-2 p-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={placeholder}
-            disabled={disabled}
-            className="flex-1 px-3 py-2 text-base text-gray-900 placeholder-gray-400 bg-transparent focus:outline-none disabled:opacity-50"
-          />
-          <button
-            type="submit"
-            disabled={disabled || !input.trim()}
-            className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-            aria-label="Send message"
-          >
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
-          </button>
-        </div>
+      <div className="glass-input flex items-center gap-3 rounded-full py-2.5 pr-3 pl-7 transition-all">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="flex-1 bg-transparent border-none outline-none text-bp-text-primary text-base font-sans py-3 placeholder:text-bp-text-muted disabled:opacity-50"
+        />
+        <button
+          type="submit"
+          disabled={disabled || !input.trim()}
+          className="w-11 h-11 rounded-full border-none bg-gradient-to-br from-bp-accent to-bp-accent-dim text-white flex items-center justify-center cursor-pointer shrink-0 shadow-[0_4px_12px_rgba(230,57,70,0.3)] hover:opacity-90 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          aria-label="Send message"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className="w-[18px] h-[18px]">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+        </button>
       </div>
     </form>
   )
