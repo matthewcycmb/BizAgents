@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { useBusiness } from '../../hooks/useBusiness'
 import { useChat } from '../../hooks/useChat'
 import { useAuth } from '../../hooks/useAuth'
+import { useConversationContext } from '../../hooks/useConversationContext'
 import { supabase } from '../../lib/supabase'
 import { ScrapingProgress } from '../onboarding/ScrapingProgress'
 import { ChatWindow } from '../chat/ChatWindow'
+import { useEffect } from 'react'
 
 export function Dashboard() {
   const { businesses, loading, refreshBusiness } = useBusiness()
@@ -91,7 +93,15 @@ export function Dashboard() {
 }
 
 function DashboardChat({ businessId, userName }: { businessId: string; userName: string }) {
-  const { messages, loading, error, businessName, sendMessage } = useChat(businessId)
+  const { activeConversationId, triggerRefresh } = useConversationContext()
+  const { messages, loading, error, businessName, sendMessage, conversationId } = useChat(businessId, activeConversationId)
+
+  // When a new conversation is created (first message sent), refresh the sidebar list
+  useEffect(() => {
+    if (conversationId && conversationId !== activeConversationId) {
+      triggerRefresh()
+    }
+  }, [conversationId, activeConversationId, triggerRefresh])
 
   return (
     <ChatWindow

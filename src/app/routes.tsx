@@ -1,10 +1,12 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { Layout } from './Layout'
 import { AuthGuard } from '../components/auth/AuthGuard'
+import { ConversationProvider } from '../hooks/useConversationContext'
 import { LoginForm } from '../components/auth/LoginForm'
 import { SignupForm } from '../components/auth/SignupForm'
 import { URLInput } from '../components/onboarding/URLInput'
 import { Dashboard } from '../components/dashboard/Dashboard'
+import { MyBusinessPage } from '../pages/MyBusinessPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { ErrorBoundary } from '../components/ui/ErrorBoundary'
 
@@ -22,7 +24,9 @@ export const router = createBrowserRouter([
     path: '/',
     element: (
       <AuthGuard>
-        <Layout />
+        <ConversationProvider>
+          <Layout />
+        </ConversationProvider>
       </AuthGuard>
     ),
     errorElement: <ErrorBoundary><NotFoundPage /></ErrorBoundary>,
@@ -36,6 +40,14 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <Dashboard />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: 'my-business',
+        element: (
+          <ErrorBoundary>
+            <MyBusinessPage />
           </ErrorBoundary>
         ),
       },

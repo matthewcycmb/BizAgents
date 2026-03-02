@@ -35,15 +35,44 @@ async function retrieveContext(
   businessId: string,
   queryEmbedding: number[]
 ): Promise<{ content: string; url: string; similarity: number }[]> {
-  const { data, error } = await supabase.rpc('match_chunks', {
-    query_embedding: JSON.stringify(queryEmbedding),
-    match_business_id: businessId,
-    match_count: 5,
-    match_threshold: 0.5,
-  })
+  // Try vector similarity search first
+  try {
+    const { data, error } = await supabase.rpc('match_chunks', {
+      query_embedding: JSON.stringify(queryEmbedding),
+      match_business_id: businessId,
+      match_count: 5,
+      match_threshold: 0.2,
+    })
 
-  if (error) throw error
-  return data || []
+    if (!error && data && data.length > 0) {
+      return data
+    }
+
+    if (error) {
+      console.error('match_chunks RPC error:', JSON.stringify(error))
+    }
+  } catch (err) {
+    console.error('match_chunks threw:', err)
+  }
+
+  // Fallback: fetch chunks directly without vector search
+  // This ensures the chatbot always has context if chunks exist
+  const { data: fallbackData, error: fallbackError } = await supabase
+    .from('chunks')
+    .select('id, content, url')
+    .eq('business_id', businessId)
+    .order('created_at', { ascending: true })
+    .limit(5)
+
+  if (fallbackError) {
+    console.error('Fallback chunk fetch error:', JSON.stringify(fallbackError))
+    return []
+  }
+
+  return (fallbackData || []).map((chunk) => ({
+    ...chunk,
+    similarity: 0,
+  }))
 }
 
 // --- Claude API call ---
@@ -133,13 +162,28 @@ serve(async (req) => {
       )
     }
 
-    // RAG: embed query and retrieve context
-    const queryEmbedding = await embedQuery(latestUserMessage.content, openaiKey)
-    const chunks = await retrieveContext(supabase, business_id, queryEmbedding)
+    // Check if any chunks exist for this business
+    const { count: chunkCount } = await supabase
+      .from('chunks')
+      .select('id', { count: 'exact', head: true })
+      .eq('business_id', business_id)
 
-    const contextText = chunks.length > 0
-      ? chunks.map((c, i) => `[Source ${i + 1}] ${c.content}`).join('\n\n')
-      : 'No relevant information found in the business knowledge base.'
+    console.log(`Business ${business_id}: ${chunkCount ?? 0} chunks in database`)
+
+    let contextText: string
+
+    if (!chunkCount || chunkCount === 0) {
+      // No chunks at all — scraping may have failed or not completed
+      contextText = 'No website content has been analyzed yet. The business website has not been scraped or produced no extractable content. Help the owner with general business advice and suggest they re-analyze their website from the My Business page.'
+    } else {
+      // RAG: embed query and retrieve context
+      const queryEmbedding = await embedQuery(latestUserMessage.content, openaiKey)
+      const chunks = await retrieveContext(supabase, business_id, queryEmbedding)
+
+      contextText = chunks.length > 0
+        ? chunks.map((c, i) => `[Source ${i + 1}] ${c.content}`).join('\n\n')
+        : 'Website has been scraped but no relevant chunks matched this query. There are ' + chunkCount + ' chunks stored. Provide general advice based on what you know about the business.'
+    }
 
     // Build system prompt — owner-facing business copilot
     const systemPrompt = `You are BizPilot, an AI business copilot for ${business.name} (${business.url}).

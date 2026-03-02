@@ -38,3 +38,20 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
 }
+
+export interface Conversation {
+  id: string
+  business_id: string
+  owner_id: string
+  title: string
+  created_at: string
+  updated_at: string
+}
+
+export interface DbChatMessage {
+  id: string
+  conversation_id: string
+  role: 'user' | 'assistant'
+  content: string
+  created_at: string
+}

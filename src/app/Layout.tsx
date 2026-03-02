@@ -1,9 +1,23 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { useState } from 'react'
+import { useBusiness } from '../hooks/useBusiness'
+import { useConversations } from '../hooks/useConversations'
+import { useConversationContext } from '../hooks/useConversationContext'
+import { useState, useEffect } from 'react'
 
 export function Layout() {
   const { user, signOut } = useAuth()
+  const { businesses } = useBusiness()
+  const business = businesses[0]
+  const { conversations, fetchConversations } = useConversations(business?.id ?? null)
+  const { activeConversationId, setActiveConversationId, newChat, refreshKey } = useConversationContext()
+
+  // Re-fetch conversations when a new one is created
+  useEffect(() => {
+    if (refreshKey > 0) {
+      fetchConversations()
+    }
+  }, [refreshKey, fetchConversations])
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -14,6 +28,18 @@ export function Layout() {
   }
 
   const isActive = (path: string) => location.pathname === path
+
+  const handleNewChat = () => {
+    newChat()
+    navigate('/dashboard')
+    setSidebarOpen(false)
+  }
+
+  const handleSelectConversation = (id: string) => {
+    setActiveConversationId(id)
+    navigate('/dashboard')
+    setSidebarOpen(false)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,15 +65,19 @@ export function Layout() {
 
           {/* New chat button */}
           <div className="p-6">
-            <button className="w-full border border-gray-300 text-gray-700 rounded-lg py-3 px-4 text-sm font-medium hover:bg-gray-50 transition-colors">
+            <button
+              onClick={handleNewChat}
+              className="w-full border border-gray-300 text-gray-700 rounded-lg py-3 px-4 text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
               New chat
             </button>
           </div>
 
           {/* Navigation links */}
-          <nav className="flex-1 px-6 space-y-1">
+          <nav className="px-6 space-y-1">
             <Link
               to="/dashboard"
+              onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm ${
                 isActive('/dashboard')
                   ? 'font-semibold text-gray-900 border-l-2 border-gray-900 pl-2'
@@ -62,6 +92,7 @@ export function Layout() {
 
             <Link
               to="/my-business"
+              onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm ${
                 isActive('/my-business')
                   ? 'font-semibold text-gray-900 border-l-2 border-gray-900 pl-2'
@@ -75,9 +106,32 @@ export function Layout() {
             </Link>
           </nav>
 
+          {/* Conversation history */}
+          {business && conversations.length > 0 && (
+            <div className="flex-1 overflow-y-auto px-6 mt-4 border-t border-gray-100 pt-4">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Recent Chats</p>
+              <div className="space-y-0.5">
+                {conversations.map((conv) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => handleSelectConversation(conv.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors ${
+                      activeConversationId === conv.id
+                        ? 'bg-gray-100 text-gray-900 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                    title={conv.title}
+                  >
+                    {conv.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* User profile section */}
           {user && (
-            <div className="border-t border-gray-100 p-6">
+            <div className="border-t border-gray-100 p-6 mt-auto">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                 <button
