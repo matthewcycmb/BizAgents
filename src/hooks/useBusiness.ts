@@ -54,5 +54,20 @@ export function useBusiness() {
     )
   }
 
-  return { businesses, loading, error, createBusiness, refreshBusiness, fetchBusinesses }
+  const updateBusiness = async (id: string, updates: { name?: string; url?: string }) => {
+    const { data, error } = await supabase
+      .from('businesses')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    setBusinesses((prev) =>
+      prev.map((b) => (b.id === id ? (data as Business) : b))
+    )
+    return data as Business
+  }
+
+  return { businesses, loading, error, createBusiness, updateBusiness, refreshBusiness, fetchBusinesses }
 }

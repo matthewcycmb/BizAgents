@@ -3,14 +3,13 @@ import { useAuth } from '../hooks/useAuth'
 import { useBusiness } from '../hooks/useBusiness'
 import { useConversations } from '../hooks/useConversations'
 import { useConversationContext } from '../hooks/useConversationContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function Layout() {
   const { user, signOut } = useAuth()
   const { businesses } = useBusiness()
-  const business = businesses[0]
-  const { conversations, fetchConversations } = useConversations(business?.id ?? null)
-  const { activeConversationId, setActiveConversationId, newChat, refreshKey } = useConversationContext()
+  const { conversations, fetchConversations } = useConversations()
+  const { activeConversationId, setActiveConversationId, setActiveBusinessId, newChat, refreshKey } = useConversationContext()
 
   // Re-fetch conversations when a new one is created
   useEffect(() => {
@@ -21,6 +20,20 @@ export function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
+  const pickerRef = useRef<HTMLDivElement>(null)
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!showPicker) return
+    const handleClick = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [showPicker])
 
   const handleSignOut = async () => {
     await signOut()
@@ -30,12 +43,27 @@ export function Layout() {
   const isActive = (path: string) => location.pathname === path
 
   const handleNewChat = () => {
-    newChat()
+    if (businesses.length >= 2) {
+      setShowPicker(true)
+    } else {
+      newChat(businesses[0]?.id)
+      navigate('/dashboard')
+      setSidebarOpen(false)
+    }
+  }
+
+  const handlePickBusiness = (businessId: string) => {
+    newChat(businessId)
+    setShowPicker(false)
     navigate('/dashboard')
     setSidebarOpen(false)
   }
 
   const handleSelectConversation = (id: string) => {
+    const conv = conversations.find((c) => c.id === id)
+    if (conv) {
+      setActiveBusinessId(conv.business_id)
+    }
     setActiveConversationId(id)
     navigate('/dashboard')
     setSidebarOpen(false)
@@ -64,13 +92,29 @@ export function Layout() {
           </div>
 
           {/* New chat button */}
-          <div className="p-6">
+          <div className="p-6 relative" ref={pickerRef}>
             <button
               onClick={handleNewChat}
               className="w-full border border-gray-300 text-gray-700 rounded-lg py-3 px-4 text-sm font-medium hover:bg-gray-50 transition-colors"
             >
               New chat
             </button>
+
+            {/* Business picker popover */}
+            {showPicker && (
+              <div className="absolute left-6 right-6 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
+                <p className="px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wider">Select business</p>
+                {businesses.map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => handlePickBusiness(b.id)}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors truncate"
+                  >
+                    {b.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Navigation links */}
@@ -102,12 +146,12 @@ export function Layout() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              <span>My Business</span>
+              <span>My Businesses</span>
             </Link>
           </nav>
 
           {/* Conversation history */}
-          {business && conversations.length > 0 && (
+          {conversations.length > 0 && (
             <div className="flex-1 overflow-y-auto px-6 mt-4 border-t border-gray-100 pt-4">
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Recent Chats</p>
               <div className="space-y-0.5">

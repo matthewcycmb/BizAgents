@@ -1,19 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import { useBusiness } from '../../hooks/useBusiness'
-import { useChat } from '../../hooks/useChat'
 import { useAuth } from '../../hooks/useAuth'
 import { useConversationContext } from '../../hooks/useConversationContext'
 import { supabase } from '../../lib/supabase'
 import { ScrapingProgress } from '../onboarding/ScrapingProgress'
 import { ChatWindow } from '../chat/ChatWindow'
+import { useChat } from '../../hooks/useChat'
 import { useEffect } from 'react'
 
 export function Dashboard() {
   const { businesses, loading, refreshBusiness } = useBusiness()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { activeBusinessId } = useConversationContext()
 
-  const business = businesses[0]
+  const business = businesses.find((b) => b.id === activeBusinessId) || businesses[0]
 
   const handleScrape = async (businessId: string, url: string) => {
     refreshBusiness(businessId)
@@ -49,6 +50,15 @@ export function Dashboard() {
         >
           Add Your Business
         </button>
+      </div>
+    )
+  }
+
+  if (!business) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+        <h2 className="text-3xl font-light tracking-tight text-gray-900 mb-2">Welcome to BizPilot</h2>
+        <p className="text-lg text-gray-400 font-light mb-12">Select a business to start chatting.</p>
       </div>
     )
   }
