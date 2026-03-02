@@ -11,7 +11,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="bg-indigo-600 text-white rounded-2xl px-5 py-3 max-w-[80%]">
+        <div className="bg-gray-900 text-white rounded-2xl px-5 py-3 max-w-[80%]">
           <p className="text-base whitespace-pre-wrap">{message.content}</p>
         </div>
       </div>
@@ -19,12 +19,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
   }
 
   return (
-    <div className="flex justify-start items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-1">
-        <span className="text-sm">🤖</span>
-      </div>
-      <div className="bg-white border border-gray-200 rounded-2xl px-5 py-3 max-w-[80%]">
-        <p className="text-base text-gray-900 whitespace-pre-wrap">{message.content}</p>
+    <div className="flex justify-start items-start gap-3 border-t border-gray-100 pt-6">
+      <div className="flex-1 pl-3">
+        <p className="text-base text-gray-900 whitespace-pre-wrap leading-relaxed">{message.content}</p>
       </div>
     </div>
   )

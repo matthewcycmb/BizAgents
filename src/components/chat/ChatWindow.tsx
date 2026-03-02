@@ -14,21 +14,18 @@ interface ChatWindowProps {
 
 const suggestionCards = [
   {
-    title: 'Analyze Website',
-    description: 'Review your site content and identify improvement areas',
-    icon: '🔍',
+    title: 'Analyze my website content',
+    description: 'Get insights on what your site communicates',
     prompt: 'Analyze my website and identify areas for improvement',
   },
   {
-    title: 'Draft Marketing',
-    description: 'Generate social media posts or email campaigns',
-    icon: '✍️',
+    title: 'Help me write marketing copy',
+    description: 'Draft emails, posts, or ad copy',
     prompt: 'Help me draft marketing content for social media',
   },
   {
-    title: 'Business Strategy',
-    description: 'Get insights and ideas to grow your business',
-    icon: '💡',
+    title: 'Suggest growth strategies',
+    description: 'Ideas to attract more customers',
     prompt: 'Give me strategic insights to grow my business',
   },
 ]
@@ -41,45 +38,43 @@ export function ChatWindow({ messages, loading, error, businessName, userName, o
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour < 18) return 'Good afternoon'
+    return 'Good evening'
+  }
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)] px-4 py-8">
       {!hasMessages ? (
         /* Welcome State */
-        <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full">
-          {/* Gradient Orb */}
-          <div
-            className="w-24 h-24 rounded-full mb-8"
-            style={{
-              background: 'radial-gradient(circle, rgba(129, 140, 248, 0.8) 0%, rgba(147, 51, 234, 0.6) 50%, rgba(99, 102, 241, 0.4) 100%)',
-              filter: 'blur(40px)',
-              opacity: 0.6,
-            }}
-          />
-
+        <div className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full pt-32">
           {/* Greeting */}
-          <h2 className="text-2xl text-indigo-600 mb-2">Hello, {userName}</h2>
-          <h1 className="text-4xl font-bold text-gray-900 mb-12 text-center">
-            How can I assist you today?
+          <h1 className="text-3xl font-light tracking-tight text-gray-900 mb-2">
+            {getGreeting()}, {userName.split('@')[0]}
           </h1>
+          <p className="text-lg text-gray-400 font-light mb-12">
+            What would you like to know about your business?
+          </p>
 
           {/* Chat Input */}
-          <div className="w-full mb-8">
-            <ChatInput onSend={onSend} disabled={loading} placeholder="Ask me anything about your business..." />
+          <div className="w-full max-w-xl mx-auto mb-8">
+            <ChatInput onSend={onSend} disabled={loading} placeholder="Ask anything..." />
           </div>
 
           {/* Suggestion Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full max-w-3xl">
             {suggestionCards.map((card, idx) => (
               <button
                 key={idx}
                 onClick={() => onSend(card.prompt)}
-                className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-indigo-300 hover:shadow-md transition-all duration-200 group"
+                className="bg-white border border-gray-200 rounded-lg p-5 text-left hover:bg-gray-50 transition-colors"
               >
-                <div className="text-3xl mb-3">{card.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+                <h3 className="text-sm font-medium text-gray-900 mb-1">
                   {card.title}
                 </h3>
-                <p className="text-sm text-gray-600">{card.description}</p>
+                <p className="text-xs text-gray-500 font-light">{card.description}</p>
               </button>
             ))}
           </div>
@@ -87,38 +82,31 @@ export function ChatWindow({ messages, loading, error, businessName, userName, o
       ) : (
         /* Conversation State */
         <>
-          <div className="flex-1 max-w-3xl mx-auto w-full space-y-6 pb-32">
+          <div className="flex-1 max-w-2xl mx-auto w-full space-y-6 pb-32">
             {messages.map((msg, i) => (
               <ChatMessage key={i} message={msg} businessName={businessName} />
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm">🤖</span>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-2xl px-5 py-3">
-                    <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
-                  </div>
+                <div className="flex items-center gap-1 px-4 py-3">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
             {error && (
               <div className="text-center">
-                <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2 inline-block">{error}</p>
+                <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Fixed Input at Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-6">
-            <div className="max-w-3xl mx-auto px-4">
-              <ChatInput onSend={onSend} disabled={loading} placeholder="Ask me anything about your business..." />
+          <div className="fixed bottom-0 left-0 right-0 lg:left-72 bg-white border-t border-gray-100 py-6">
+            <div className="max-w-2xl mx-auto px-4">
+              <ChatInput onSend={onSend} disabled={loading} placeholder="Ask anything..." />
             </div>
           </div>
         </>

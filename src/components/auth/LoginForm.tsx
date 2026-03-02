@@ -25,18 +25,18 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="max-w-md w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-indigo-600">BizPilot</h1>
-          <h2 className="mt-2 text-xl text-gray-600">Sign in to your account</h2>
+          <h1 className="text-2xl font-light tracking-tight text-gray-900">BizPilot</h1>
+          <h2 className="mt-3 text-sm text-gray-500">Sign in to continue</h2>
         </div>
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-700 p-3 rounded text-sm">{error}</div>
+            <p className="text-sm text-red-600 text-center">{error}</p>
           )}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
               Email
             </label>
             <input
@@ -45,11 +45,11 @@ export function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="block w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
               Password
             </label>
             <input
@@ -58,19 +58,19 @@ export function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="block w-full px-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="w-full py-3 px-4 rounded-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-gray-500">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-indigo-600 hover:text-indigo-500 font-medium">
+            <Link to="/signup" className="text-gray-900 hover:underline">
               Sign up
             </Link>
           </p>
