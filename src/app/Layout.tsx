@@ -21,19 +21,24 @@ export function Layout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const pickerRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
-  // Close picker on outside click
+  // Close picker/menu on outside click
   useEffect(() => {
-    if (!showPicker) return
+    if (!showPicker && !menuOpenId) return
     const handleClick = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+      if (showPicker && pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
         setShowPicker(false)
+      }
+      if (menuOpenId && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpenId(null)
       }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [showPicker])
+  }, [showPicker, menuOpenId])
 
   const handleSignOut = async () => {
     await signOut()
@@ -172,7 +177,7 @@ export function Layout() {
                 {conversations.map((conv) => (
                   <div
                     key={conv.id}
-                    className={`group flex items-center gap-1 rounded-lg transition-all ${
+                    className={`group relative flex items-center gap-1 rounded-lg transition-all ${
                       activeConversationId === conv.id
                         ? 'bg-bp-bg-card'
                         : 'hover:bg-bp-bg-card'
@@ -192,18 +197,33 @@ export function Layout() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        deleteConversation(conv.id)
-                        if (activeConversationId === conv.id) {
-                          newChat()
-                        }
+                        setMenuOpenId(menuOpenId === conv.id ? null : conv.id)
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 text-bp-text-muted hover:text-bp-accent transition-all"
-                      title="Delete chat"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 text-bp-text-muted hover:text-bp-text-primary transition-all"
                     >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-3.5 h-3.5">
-                        <path d="M18 6L6 18M6 6l12 12" />
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
                       </svg>
                     </button>
+                    {menuOpenId === conv.id && (
+                      <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 bg-bp-bg-card border border-bp-border rounded-xl shadow-lg z-20 py-1">
+                        <button
+                          onClick={() => {
+                            deleteConversation(conv.id)
+                            setMenuOpenId(null)
+                            if (activeConversationId === conv.id) {
+                              newChat()
+                            }
+                          }}
+                          className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-bp-accent hover:bg-white/[0.04] transition-colors"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-4 h-4">
+                            <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
