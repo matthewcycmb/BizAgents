@@ -12,7 +12,7 @@ export function Dashboard() {
   const { businesses, loading, refreshBusiness } = useBusiness()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { activeBusinessId } = useConversationContext()
+  const { activeBusinessId, chatKey } = useConversationContext()
 
   const business = businesses.find((b) => b.id === activeBusinessId) || businesses[0]
 
@@ -115,7 +115,7 @@ export function Dashboard() {
   }
 
   // Chat interface - scraping completed
-  return <DashboardChat businessId={business.id} userName={user?.email || 'there'} />
+  return <DashboardChat key={chatKey} businessId={business.id} userName={user?.email || 'there'} />
 }
 
 function DashboardChat({ businessId, userName }: { businessId: string; userName: string }) {

@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from 'react'
 export function Layout() {
   const { user, signOut } = useAuth()
   const { businesses } = useBusiness()
-  const { conversations, fetchConversations } = useConversations()
+  const { conversations, fetchConversations, deleteConversation } = useConversations()
   const { activeConversationId, setActiveConversationId, setActiveBusinessId, newChat, refreshKey } = useConversationContext()
 
   // Re-fetch conversations when a new one is created
@@ -170,18 +170,41 @@ export function Layout() {
               <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-bp-text-muted px-2 mb-2.5">Recent Chats</p>
               <div className="flex-1 overflow-y-auto flex flex-col gap-0.5">
                 {conversations.map((conv) => (
-                  <button
+                  <div
                     key={conv.id}
-                    onClick={() => handleSelectConversation(conv.id)}
-                    className={`py-2 px-3 rounded-lg text-[13px] text-left truncate transition-all ${
+                    className={`group flex items-center gap-1 rounded-lg transition-all ${
                       activeConversationId === conv.id
-                        ? 'bg-bp-bg-card text-bp-text-primary'
-                        : 'text-bp-text-secondary hover:bg-bp-bg-card hover:text-bp-text-primary'
+                        ? 'bg-bp-bg-card'
+                        : 'hover:bg-bp-bg-card'
                     }`}
-                    title={conv.title}
                   >
-                    {conv.title}
-                  </button>
+                    <button
+                      onClick={() => handleSelectConversation(conv.id)}
+                      className={`flex-1 py-2 px-3 text-[13px] text-left truncate ${
+                        activeConversationId === conv.id
+                          ? 'text-bp-text-primary'
+                          : 'text-bp-text-secondary hover:text-bp-text-primary'
+                      }`}
+                      title={conv.title}
+                    >
+                      {conv.title}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteConversation(conv.id)
+                        if (activeConversationId === conv.id) {
+                          newChat()
+                        }
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 text-bp-text-muted hover:text-bp-accent transition-all"
+                      title="Delete chat"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-3.5 h-3.5">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 ))}
               </div>
             </>

@@ -6,6 +6,7 @@ interface ConversationContextType {
   activeBusinessId: string | null
   setActiveBusinessId: (id: string | null) => void
   newChat: (businessId?: string) => void
+  chatKey: number
   refreshKey: number
   triggerRefresh: () => void
 }
@@ -16,6 +17,7 @@ const ConversationContext = createContext<ConversationContextType>({
   activeBusinessId: null,
   setActiveBusinessId: () => {},
   newChat: () => {},
+  chatKey: 0,
   refreshKey: 0,
   triggerRefresh: () => {},
 })
@@ -25,8 +27,11 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
   const [activeBusinessId, setActiveBusinessId] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
+  const [chatKey, setChatKey] = useState(0)
+
   const newChat = useCallback((businessId?: string) => {
     setActiveConversationId(null)
+    setChatKey((k) => k + 1)
     if (businessId) {
       setActiveBusinessId(businessId)
     }
@@ -43,6 +48,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       activeBusinessId,
       setActiveBusinessId,
       newChat,
+      chatKey,
       refreshKey,
       triggerRefresh,
     }}>
