@@ -256,14 +256,18 @@ ${contextText}
     // Parse suggested actions from the response
     let message = rawMessage
     let suggestions: string[] = []
-    const suggestionsMatch = rawMessage.match(/\nSUGGESTED_ACTIONS:\s*(.+)$/m)
+    // Match SUGGESTED_ACTIONS with optional markdown bold/backticks and flexible whitespace
+    const suggestionsMatch = rawMessage.match(/\n[*`]*SUGGESTED[_ ]ACTIONS[*`]*[:\s]*(.+)$/im)
+    console.log('Raw response tail:', rawMessage.slice(-300))
+    console.log('Suggestions regex matched:', !!suggestionsMatch)
     if (suggestionsMatch) {
       message = rawMessage.slice(0, suggestionsMatch.index).trimEnd()
       suggestions = suggestionsMatch[1]
         .split('|')
-        .map((s) => s.trim().replace(/^"|"$/g, ''))
+        .map((s) => s.trim().replace(/^[""`*]+|[""`*]+$/g, ''))
         .filter(Boolean)
         .slice(0, 3)
+      console.log('Parsed suggestions:', suggestions)
     }
 
     return new Response(
