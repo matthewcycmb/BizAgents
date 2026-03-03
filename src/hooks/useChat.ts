@@ -7,6 +7,7 @@ export function useChat(businessId: string, conversationId?: string | null) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [businessName, setBusinessName] = useState<string>('')
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId ?? null)
   const [initialLoading, setInitialLoading] = useState(!!conversationId)
 
@@ -42,6 +43,7 @@ export function useChat(businessId: string, conversationId?: string | null) {
     setMessages((prev) => [...prev, userMessage])
     setLoading(true)
     setError(null)
+    setSuggestions([])
 
     try {
       // Create conversation on first message if none exists
@@ -85,6 +87,10 @@ export function useChat(businessId: string, conversationId?: string | null) {
         setBusinessName(data.business_name)
       }
 
+      if (data?.suggestions) {
+        setSuggestions(data.suggestions)
+      }
+
       const assistantMessage: ChatMessage = {
         role: 'assistant',
         content: data.message,
@@ -115,6 +121,7 @@ export function useChat(businessId: string, conversationId?: string | null) {
     loading: loading || initialLoading,
     error,
     businessName,
+    suggestions,
     sendMessage,
     conversationId: currentConversationId,
   }

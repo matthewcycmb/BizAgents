@@ -238,16 +238,38 @@ GENERAL RULES:
 - Keep every response as short as possible while being complete.
 - When referencing their website content, be specific (quote prices, page names, etc).
 
+SUGGESTED ACTIONS:
+At the very end of every response, on its own line, output exactly:
+SUGGESTED_ACTIONS: "action 1" | "action 2" | "action 3"
+- Always include exactly 3 suggestions.
+- Each suggestion must be a short, specific action the owner can ask you to do next (e.g., "Write my About page", "Rewrite pricing section", "Draft social media posts").
+- Tailor suggestions to what would logically follow your response.
+- This line will be stripped from the visible response — do not reference it in your message.
+
 --- BUSINESS WEBSITE CONTENT ---
 ${contextText}
 --- END CONTENT ---`
 
     // Call Claude
-    const message = await callClaude(systemPrompt, recentMessages, anthropicKey)
+    const rawMessage = await callClaude(systemPrompt, recentMessages, anthropicKey)
+
+    // Parse suggested actions from the response
+    let message = rawMessage
+    let suggestions: string[] = []
+    const suggestionsMatch = rawMessage.match(/\nSUGGESTED_ACTIONS:\s*(.+)$/m)
+    if (suggestionsMatch) {
+      message = rawMessage.slice(0, suggestionsMatch.index).trimEnd()
+      suggestions = suggestionsMatch[1]
+        .split('|')
+        .map((s) => s.trim().replace(/^"|"$/g, ''))
+        .filter(Boolean)
+        .slice(0, 3)
+    }
 
     return new Response(
       JSON.stringify({
         message,
+        suggestions,
         business_name: business.name,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

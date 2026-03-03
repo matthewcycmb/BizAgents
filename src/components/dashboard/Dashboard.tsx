@@ -120,7 +120,7 @@ export function Dashboard() {
 
 function DashboardChat({ businessId, userName }: { businessId: string; userName: string }) {
   const { activeConversationId, triggerRefresh } = useConversationContext()
-  const { messages, loading, error, businessName, sendMessage, conversationId } = useChat(businessId, activeConversationId)
+  const { messages, loading, error, businessName, suggestions, sendMessage, conversationId } = useChat(businessId, activeConversationId)
 
   // When a new conversation is created (first message sent), refresh the sidebar list
   useEffect(() => {
@@ -136,6 +136,7 @@ function DashboardChat({ businessId, userName }: { businessId: string; userName:
       error={error}
       businessName={businessName || 'BizPilot'}
       userName={userName}
+      suggestions={suggestions}
       onSend={sendMessage}
     />
   )

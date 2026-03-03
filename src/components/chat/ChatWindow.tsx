@@ -9,6 +9,7 @@ interface ChatWindowProps {
   error: string | null
   businessName: string
   userName: string
+  suggestions?: string[]
   onSend: (message: string) => void
 }
 
@@ -45,7 +46,7 @@ const suggestionCards = [
   },
 ]
 
-export function ChatWindow({ messages, loading, error, businessName, userName, onSend }: ChatWindowProps) {
+export function ChatWindow({ messages, loading, error, businessName, userName, suggestions = [], onSend }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const hasMessages = messages.length > 0
 
@@ -112,6 +113,19 @@ export function ChatWindow({ messages, loading, error, businessName, userName, o
               {messages.map((msg, i) => (
                 <ChatMessage key={i} message={msg} businessName={businessName} />
               ))}
+              {!loading && suggestions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {suggestions.map((text, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => onSend(text)}
+                      className="px-4 py-2 text-sm rounded-full border border-bp-border bg-bp-bg-card/60 backdrop-blur-sm text-bp-text-secondary hover:text-bp-text-primary hover:border-bp-accent/50 hover:bg-bp-bg-card transition-all duration-200 cursor-pointer"
+                    >
+                      {text}
+                    </button>
+                  ))}
+                </div>
+              )}
               {loading && (
                 <div className="flex justify-start">
                   <div className="flex items-center gap-1 px-4 py-3">
